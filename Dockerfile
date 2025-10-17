@@ -17,9 +17,9 @@ RUN apk --update --no-cache upgrade
 RUN apk --update --no-cache add curl ca-certificates pure-ftpd s6-overlay tzdata libretls libsodium
 RUN apk add --no-cache --virtual .tool-deps coreutils autoconf g++ libtool make
 RUN apk add --no-cache --virtual .build-deps libretls-dev libsodium-dev
-RUN curl -sSfL -o /tmp/pure-ftpd.tar.gz https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.5.2.tar.gz
+RUN curl -sSfL -o /tmp/pure-ftpd.tar.gz https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.52.tar.gz
 RUN tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/
-RUN cd /tmp/pure-ftpd-1.5.2; ./configure \
+RUN cd /tmp/pure-ftpd-1.0.52; ./configure \
         --prefix=/usr \
         --with-altlog \
         --with-ftpwho \
@@ -31,8 +31,8 @@ RUN cd /tmp/pure-ftpd-1.5.2; ./configure \
         --without-inetd \
         --without-usernames \
         --without-pam \
-RUN cd /tmp/pure-ftpd-1.5.2; make
-RUN cd /tmp/pure-ftpd-1.5.2; make install
+RUN cd /tmp/pure-ftpd-1.0.52; make
+RUN cd /tmp/pure-ftpd-1.0.52; make install
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
