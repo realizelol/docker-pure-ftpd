@@ -11,6 +11,9 @@ pure_ftpd_ver_on="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/rele
                     sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"
 pure_ftpd_ver_of="$(pure-ftpd -h 2>&1 | sed -n 's/^pure-ftpd v\([0-9\.-]*\) .*/\1/p')"
 
+pure_ftpd_ver_on="1"
+pure_ftpd_ver_of="1"
+
 if [ "${pure_ftpd_ver_of}" != "${pure_ftpd_ver_on}" ]; then
   apk --update --no-cache add \
     "$(: '# Install tools for building')" \
