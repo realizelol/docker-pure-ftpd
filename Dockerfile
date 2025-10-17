@@ -26,12 +26,10 @@ RUN apk --update --no-cache upgrade; \
       coreutils autoconf g++ libtool make; \
     && apk add --no-cache --virtual .build-deps \
       libretls-dev libsodium-dev; \
-    pure_ftpd_ver="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
-                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"; \
     curl -sSfL -o /tmp/pure-ftpd.tar.gz \
-      "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver}.tar.gz" \
+      "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.5.2.tar.gz" \
     && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
-    && cd "/tmp/pure-ftpd-${pure_ftpd_ver}" \
+    && cd "/tmp/pure-ftpd-1.5.2" \
     && ./configure \
         --prefix=/usr \
         --with-altlog \
@@ -44,10 +42,7 @@ RUN apk --update --no-cache upgrade; \
         --without-inetd \
         --without-usernames \
         --without-pam \
-    && make -j2 && make -j2 install; \
-    apk del .tool-deps .build-deps; \
-    adduser --disabled-password -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
-    rm -rf /etc/periodic* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
+    && make && make install
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
