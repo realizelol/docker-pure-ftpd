@@ -64,7 +64,7 @@ fi
 # Secure mode
 unset SECURE_FLAGS
 if [ "${SECURE_MODE}" = "true" ]; then
-  SECURE_FLAGS="${SECURE_FLAGS} --maxclientsnumber 1"
+  SECURE_FLAGS="${SECURE_FLAGS} --maxclientsnumber 3"
   SECURE_FLAGS="${SECURE_FLAGS} --maxclientsperip 10"
   SECURE_FLAGS="${SECURE_FLAGS} --antiwarez"
   SECURE_FLAGS="${SECURE_FLAGS} --customerproof"

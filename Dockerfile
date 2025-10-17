@@ -39,7 +39,7 @@ RUN cd /tmp/pure-ftpd-*; \
     && make -j8 \
     && make -j8 install
 RUN apk del .tool-deps .build-deps
-RUN apk cache clean
+RUN apk cache clean 2>/dev/null || true
 RUN adduser --disabled-password -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
     cd /; rm -rf /etc/periodic /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
 
