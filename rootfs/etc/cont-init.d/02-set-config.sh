@@ -3,7 +3,7 @@
 # shellcheck enable=require-variable-braces
 
 TZ=${TZ:-UTC}
-CONTAINER_IP="$(ip a show dev "$(ip r show default | awk '{print$5}')" | sed -nr 's%.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/[0-9]{1,2} .*%\1%p')"
+CONTAINER_IP="$(ip a show "$(netstat -r | awk '/^default/{print$8}')" | sed -nr 's%.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/[0-9]{1,2} .*%\1%p')"
 SECURE_MODE=${SECURE_MODE:-true}
 ACTIVE_PORT=${ACTIVE_PORT:-21000}
 PASSIVE_IP=${PASSIVE_IP:-${CONTAINER_IP}}
