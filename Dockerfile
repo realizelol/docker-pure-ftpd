@@ -42,7 +42,7 @@ RUN cd "/tmp/pure-ftpd-${pure_ftpd_ver}"; \
 RUN apk del .tool-deps .build-deps
 RUN apk cache clean
 RUN adduser --disabled-password -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
-    cd /; rm -rf /etc/periodic /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*;
+    cd /; rm -rf /etc/periodic /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*; \
     unset pure_ftpd_ver
 
 COPY rootfs /
