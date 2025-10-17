@@ -32,8 +32,10 @@ RUN cd /tmp/pure-ftpd-1.0.52; ./configure \
         --without-pam \
         --without-shadow \
         --without-usernames
-RUN cd /tmp/pure-ftpd-1.0.52; make 2>&1
-RUN cd /tmp/pure-ftpd-1.0.52; make install
+RUN cd /tmp/pure-ftpd-1.0.52; make -j8
+RUN cd /tmp/pure-ftpd-1.0.52; make -j8 install
+RUN adduser --disabled-password -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
+    rm -rf /etc/periodic* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
