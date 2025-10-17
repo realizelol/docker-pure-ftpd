@@ -18,7 +18,7 @@ RUN apk --update --no-cache add curl ca-certificates pure-ftpd s6-overlay tzdata
 RUN apk add --no-cache --virtual .tool-deps coreutils autoconf g++ libtool make
 RUN apk add --no-cache --virtual .build-deps libretls-dev libsodium-dev
 RUN pure_ftpd_ver="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
-                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"
+                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"; \
     export pure_ftpd_ver="${pure_ftpd_ver}"
 RUN curl -sSfL -o "/tmp/pure-ftpd.tar.gz" \
       "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver}.tar.gz"
