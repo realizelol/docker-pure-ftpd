@@ -5,7 +5,8 @@
 mkdir -p /etc/services.d/pure-ftpd
 
 cat > /etc/services.d/pure-ftpd/run <<EOF
-#!/usr/bin/with-contenv sh
+#!/usr/bin/execlineb -P
+with-contenv
 pure-ftpd ${PUREFTPD_FLAGS}
 EOF
 chmod +x /etc/services.d/pure-ftpd/run
