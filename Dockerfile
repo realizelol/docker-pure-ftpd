@@ -41,6 +41,9 @@ RUN apk --update --no-cache upgrade && \
     \
     "$(: '# Build Pure-FTPd from sources')" \
     && ./configure \
+        --prefix=/usr \
+        --with-brokenrealpath \
+        --with-certfile=/pure-ftpd/data/pure-ftpd.pem \
         --with-peruserlimits \
         --with-puredb \
         --with-quotas \
@@ -52,6 +55,7 @@ RUN apk --update --no-cache upgrade && \
         --without-humor \
         --without-inetd \
         --without-usernames \
+        --without-pam \
     && make -j2 && make -j2 install; \
     \
     "$(: '# Cleanup unnecessary stuff')" \
