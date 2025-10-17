@@ -15,13 +15,47 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
 
 RUN apk --update --no-cache upgrade; \
     apk --update --no-cache add \
+    curl \
+    ca-certificates \
     pure-ftpd \
     s6-overlay \
     tzdata \
     libretls \
     libsodium; \
-    addgroup -g "${FTP_GID}" "${FTP_GRP}"; \
-    adduser --disabled-password -M -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
+    \
+    "$(: '# Install tools for building')" \
+    && apk add --no-cache --virtual .tool-deps \
+      coreutils autoconf g++ libtool make; \
+    \
+    "$(: '# Install Pure-FTPd build dependencies')" \
+    && apk add --no-cache --virtual .build-deps \
+      libretls-dev libsodium-dev; \
+    \
+    pure_ftpd_ver="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
+                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)" \
+    && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
+        "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver}.tar.gz" \
+    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
+    && cd "/tmp/pure-ftpd-${pure_ftpd_ver}" \
+    \
+    "$(: '# Build Pure-FTPd from sources')" \
+    && ./configure \
+        --prefix=/usr \
+        --with-altlog \
+        --with-ftpwho \
+        --with-puredb \
+        --with-peruserlimits \
+        --with-rfc2640 \
+        --without-capabilities \
+        --without-humor \
+        --without-inetd \
+        --without-usernames \
+        --without-pam; \
+    && make -j2 && make -j2 install; \
+    \
+    "$(: '# Cleanup unnecessary stuff')" \
+    apk del .tool-deps .build-deps; \
+    adduser --disabled-password -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
     rm -rf /etc/periodic* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
 
 COPY rootfs /
