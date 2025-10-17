@@ -3,4 +3,4 @@
 # shellcheck enable=require-variable-braces
 
 # Delete default cronjobs in periodic folder
-rm -f /etc/periodic/*
+rm -rf /etc/periodic*

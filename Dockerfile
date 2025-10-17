@@ -57,7 +57,7 @@ RUN apk --update --no-cache upgrade && \
     apk del .tool-deps .build-deps; \
     addgroup -g "${FTP_GID}" "${FTP_GRP}"; \
     adduser --disabled-password -M -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
-    rm -f /etc/periodic/* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
+    rm -rf /etc/periodic* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
