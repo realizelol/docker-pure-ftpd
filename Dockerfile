@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM alpine:latest
 
-ENV S6_LOGGING="2" \
-    S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
     SOCKLOG_TIMESTAMP_FORMAT="" \
     TZ="UTC" \
     FTP_UID="1000" \
