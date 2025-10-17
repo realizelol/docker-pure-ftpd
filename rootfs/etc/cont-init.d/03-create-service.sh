@@ -6,6 +6,7 @@ mkdir -p /etc/services.d/pure-ftpd
 
 cat > /etc/services.d/pure-ftpd/run <<EOF
 #!/usr/bin/with-contenv sh
+S6_LOGGING="2"
 pure-ftpd${PUREFTPD_FLAGS:-$(cat /var/run/s6/container_environment/PUREFTPD_FLAGS)} 2>&1
 EOF
 chmod +x /etc/services.d/pure-ftpd/run
