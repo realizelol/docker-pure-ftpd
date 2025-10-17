@@ -18,6 +18,8 @@ ENV S6_KEEP_ENV="1" \
 
 RUN apk --update --no-cache upgrade && \
     apk --update --no-cache add \
+    curl \
+    ca-certificates \
     s6-overlay \
     tzdata \
     libretls \
@@ -25,7 +27,7 @@ RUN apk --update --no-cache upgrade && \
     \
     "$(: '# Install tools for building')" \
     && apk add --no-cache --virtual .tool-deps \
-      curl coreutils autoconf g++ libtool make; \
+      coreutils autoconf g++ libtool make; \
     \
     "$(: '# Install Pure-FTPd build dependencies')" \
     && apk add --no-cache --virtual .build-deps \
