@@ -10,6 +10,7 @@ pure-ftpd ${PUREFTPD_FLAGS}
 EOF
 chmod +x /etc/services.d/pure-ftpd/run
 
+mkdir -p /var/run/s6/services
 cat > /etc/services.d/pure-ftpd/finish <<EOF
 #!/usr/bin/with-contenv sh
 echo >&2 "pure-ftpd exited. code=${1}"
