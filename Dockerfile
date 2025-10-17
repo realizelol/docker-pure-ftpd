@@ -2,6 +2,7 @@
 FROM alpine:latest
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
+    SOCKLOG_TIMESTAMP_FORMAT="" \
     TZ="UTC" \
     FTP_UID="1000" \
     FTP_GID="1000" \
@@ -10,10 +11,7 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
     FTP_SSL="/pure-ftpd/ssl" \
     FTP_DIR="/pure-ftpd/ftp" \
     FTP_PWD="/pure-ftpd/data/pureftpd.passwd" \
-    FTP_PDB="/pure-ftpd/data/pureftpd.pdb" \
-    SOCKLOG_TIMESTAMP_FORMAT="" \
-    PURE_PASSWDFILE="" \
-    PURE_DBFILE= \
+    FTP_PDB="/pure-ftpd/data/pureftpd.pdb"
 
 RUN apk --update --no-cache upgrade && \
     apk --update --no-cache add \
@@ -23,6 +21,7 @@ RUN apk --update --no-cache upgrade && \
     addgroup -g "${FTP_GID}" "${FTP_GRP}"; \
     adduser --disabled-password -M -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
     rm -rf /etc/periodic; \
+    rm -f /etc/socklog.rules/*; \
     rm -rf /tmp/*
 
 COPY rootfs /
