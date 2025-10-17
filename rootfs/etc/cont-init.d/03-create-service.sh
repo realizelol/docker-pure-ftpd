@@ -2,6 +2,10 @@
 # shellcheck shell=sh
 # shellcheck enable=require-variable-braces
 
+if [ -z "${PUREFTPD_FLAGS}" ]; then
+  PUREFTPD_FLAGS=$(cat /var/run/s6/container_environment/PUREFTPD_FLAGS)
+fi
+
 mkdir -p /etc/services.d/pure-ftpd
 
 cat > /etc/services.d/pure-ftpd/run <<EOF
