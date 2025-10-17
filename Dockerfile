@@ -25,6 +25,7 @@ RUN apk --update --no-cache upgrade && \
     rm -rf /tmp/*
 
 COPY rootfs /
+RUN chmod +x /etc/cont-init.d/*
 
 EXPOSE 21000/tcp 21001-22011/tcp
 WORKDIR "/pure-ftpd/data"
