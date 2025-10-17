@@ -84,4 +84,5 @@ echo "  Secure:${SECURE_FLAGS}"
 echo "  Additional:${ADD_FLAGS}"
 echo "  All:${FLAGS}"
 
+mkdir -p /var/run/s6/container_environment
 printf '%s' "${FLAGS}" > /var/run/s6/container_environment/PUREFTPD_FLAGS
