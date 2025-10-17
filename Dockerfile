@@ -29,9 +29,10 @@ RUN cd /tmp/pure-ftpd-1.0.52; ./configure \
         --without-capabilities \
         --without-humor \
         --without-inetd \
-        --without-usernames \
         --without-pam \
-RUN cd /tmp/pure-ftpd-1.0.52; make
+        --without-shadow \
+        --without-usernames
+RUN cd /tmp/pure-ftpd-1.0.52; make 2>&1
 RUN cd /tmp/pure-ftpd-1.0.52; make install
 
 COPY rootfs /
