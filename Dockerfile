@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM alpine:latest
 
-ENV S6_KEEP_ENV="1" \
-    S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
     SOCKLOG_TIMESTAMP_FORMAT="" \
     TZ="UTC" \
     FTP_UID="1000" \
@@ -16,53 +15,54 @@ ENV S6_KEEP_ENV="1" \
 
 RUN apk --update --no-cache upgrade && \
     apk --update --no-cache add \
-    curl \
+    pure-ftpd \
     ca-certificates \
     s6-overlay \
     tzdata \
     libretls \
     libsodium; \
     \
-    "$(: '# Install tools for building')" \
-    && apk add --no-cache --virtual .tool-deps \
-      coreutils autoconf g++ libtool make; \
-    \
-    "$(: '# Install Pure-FTPd build dependencies')" \
-    && apk add --no-cache --virtual .build-deps \
-      libretls-dev libsodium-dev; \
-    \
-    update-ca-certificates && \
-    pure_ftpd_ver="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
-                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)" \
-    && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
-        "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver}.tar.gz" \
-    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
-    && cd "/tmp/pure-ftpd-${pure_ftpd_ver}" \
-    \
-    "$(: '# Build Pure-FTPd from sources')" \
-    && ./configure \
-        --prefix=/usr \
-        --with-brokenrealpath \
-        --with-certfile=/pure-ftpd/data/pure-ftpd.pem \
-        --with-peruserlimits \
-        --with-puredb \
-        --with-quotas \
-        --with-ratios \
-        --with-rfc2640 \
-        --with-throttling  \
-        --with-tls \
-        --without-capabilities \
-        --without-humor \
-        --without-inetd \
-        --without-usernames \
-        --without-pam \
-    && make -j2 && make -j2 install; \
-    \
-    "$(: '# Cleanup unnecessary stuff')" \
-    apk del .tool-deps .build-deps; \
     addgroup -g "${FTP_GID}" "${FTP_GRP}"; \
     adduser --disabled-password -M -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
     rm -rf /etc/periodic /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
+#    "$(: '# Install tools for building')" \
+#    && apk add --no-cache --virtual .tool-deps \
+#      coreutils autoconf g++ libtool make; \
+#    \
+#    "$(: '# Install Pure-FTPd build dependencies')" \
+#    && apk add --no-cache --virtual .build-deps \
+#      libretls-dev libsodium-dev; \
+#    \
+#    update-ca-certificates && \
+#    pure_ftpd_ver="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
+#                      sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)" \
+#    && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
+#        "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver}.tar.gz" \
+#    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
+#    && cd "/tmp/pure-ftpd-${pure_ftpd_ver}" \
+#    \
+#    "$(: '# Build Pure-FTPd from sources')" \
+#    && ./configure \
+#        --prefix=/usr \
+#        --with-brokenrealpath \
+#        --with-certfile=/pure-ftpd/data/pure-ftpd.pem \
+#        --with-peruserlimits \
+#        --with-puredb \
+#        --with-quotas \
+#        --with-ratios \
+#        --with-rfc2640 \
+#        --with-throttling  \
+#        --with-tls \
+#        --without-capabilities \
+#        --without-humor \
+#        --without-inetd \
+#        --without-usernames \
+#        --without-pam \
+#    && make -j2 && make -j2 install; \
+#    \
+#    "$(: '# Cleanup unnecessary stuff')" \
+#    apk del .tool-deps .build-deps; \
+
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*

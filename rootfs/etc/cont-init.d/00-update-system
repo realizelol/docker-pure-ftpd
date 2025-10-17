@@ -5,42 +5,42 @@
 apk --update --no-cache upgrade
 apk cache clean 2>/dev/null || true
 
-update-ca-certificates
+update-ca-certificates >/dev/null || true
 
-pure_ftpd_ver_on="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
-                sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"
-pure_ftpd_ver_of="$(pure-ftpd -h 2>&1 | grep -o "[0-9\.-]\{2,\}")"
+#pure_ftpd_ver_on="$(curl -sSfL 'https://download.pureftpd.org/pub/pure-ftpd/releases/' | \
+#                sed -n 's%.*href=\"pure-ftpd-\([0-9\.-]*\)\.tar.gz.*%\1%p' | sort -Vr | head -n1)"
+#pure_ftpd_ver_of="$(pure-ftpd -h 2>&1 | grep -o "[0-9\.-]\{2,\}")"
 
-if [ "${pure_ftpd_ver_of}" != "${pure_ftpd_ver_on}" ]; then
-  apk --update --no-cache add \
-    "$(: '# Install tools for building')" \
-    && apk add --no-cache --virtual .tool-deps \
-    curl coreutils autoconf g++ libtool make \
-    \
-    "$(: '# Install Pure-FTPd build dependencies')" \
-    && apk add --no-cache --virtual .build-deps \
-    libretls-dev libsodium-dev \
-    \
-    && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
-      "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver_on}.tar.gz" \
-    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
-    && cd /tmp/pure-ftpd-* \
-    \
-    "$(: '# Build Pure-FTPd from sources')" \
-    && ./configure \
-      --with-peruserlimits \
-      --with-puredb \
-      --with-quotas \
-      --with-ratios \
-      --with-rfc2640 \
-      --with-throttling  \
-      --with-tls \
-      --without-capabilities \
-      --without-humor \
-      --without-inetd \
-      --without-usernames \
-    && make -j2 && make -j2 install \
-    \
-    "$(: '# Cleanup unnecessary stuff')" \
-    && apk del .tool-deps .build-deps
-fi
+#if [ "${pure_ftpd_ver_of}" != "${pure_ftpd_ver_on}" ]; then
+#  apk --update --no-cache add \
+#    "$(: '# Install tools for building')" \
+#    && apk add --no-cache --virtual .tool-deps \
+#    curl coreutils autoconf g++ libtool make \
+#    \
+#    "$(: '# Install Pure-FTPd build dependencies')" \
+#    && apk add --no-cache --virtual .build-deps \
+#    libretls-dev libsodium-dev \
+#    \
+#    && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
+#      "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver_on}.tar.gz" \
+#    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
+#    && cd /tmp/pure-ftpd-* \
+#    \
+#    "$(: '# Build Pure-FTPd from sources')" \
+#    && ./configure \
+#      --with-peruserlimits \
+#      --with-puredb \
+#      --with-quotas \
+#      --with-ratios \
+#      --with-rfc2640 \
+#      --with-throttling  \
+#      --with-tls \
+#      --without-capabilities \
+#      --without-humor \
+#      --without-inetd \
+#      --without-usernames \
+#    && make -j2 && make -j2 install \
+#    \
+#    "$(: '# Cleanup unnecessary stuff')" \
+#    && apk del .tool-deps .build-deps
+#fi
