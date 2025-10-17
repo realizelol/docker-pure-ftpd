@@ -8,20 +8,41 @@ SECURE_MODE=${SECURE_MODE:-true}
 ACTIVE_PORT=${ACTIVE_PORT:-21000}
 PASSIVE_IP=${PASSIVE_IP:-${CONTAINER_IP}}
 PASSIVE_PORT_RANGE=${PASSIVE_PORT_RANGE:-21001:21011}
-
-extractFromConf() {
-  awk -F' ' "/^${1}/ {print\$2}" < "${2}"
-}
-
 PFTPD_FLAGS="/pure-ftpd/data/pureftpd.flags"
 PFTPD_PUREDB="/pure-ftpd/data/pureftpd.pdb"
 PFTPD_PASSWD="/pure-ftpd/data/pureftpd.passwd"
 PFTPD_PEM="/pure-ftpd/data/pureftpd.pem"
 PFTPD_DHPARAMS="/pure-ftpd/data/pureftpd-dhparams.pem"
 
+extractFromConf() {
+  awk -F' ' "/^${1}/ {print\$2}" < "${2}"
+}
+
+# pre-config
+
 [ -d /pure-ftpd/data ] || mkdir -p /pure-ftpd/data
 [ -d /pure-ftpd/ftp ] || mkdir -p /pure-ftpd/ftp
 [ -d /pure-ftpd/ssl ] || mkdir -p /pure-ftpd/ssl
+
+# Timezone
+echo "Setting timezone to ${TZ}..."
+ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+echo "${TZ}" > /etc/timezone
+
+# create pure-ftpd database
+touch "${PFTPD_PUREDB}" "${PFTPD_PASSWD}"
+pure-pw mkdb "${PFTPD_PUREDB}" -f "${PFTPD_PASSWD}"
+
+# Check TLS cert
+if [ -f "${PFTPD_PEM}" ]; then
+  chmod 600 "${PFTPD_PEM}"
+fi
+if [ -f "${PFTPD_DHPARAMS}" ]; then
+  chmod 600 "${PFTPD_DHPARAMS}"
+  ln -sf "${PFTPD_DHPARAMS}" "/${FTP_SSL}/pure-ftpd-dhparams.pem"
+fi
+
+# Create FLAGS
 
 unset ADD_FLAGS
 if [ -f "${PFTPD_FLAGS}" ]; then
@@ -38,13 +59,14 @@ FLAGS="${FLAGS} --noanonymous"
 FLAGS="${FLAGS} --createhomedir"
 FLAGS="${FLAGS} --nochmod"
 FLAGS="${FLAGS} --syslogfacility ftp"
+FLAGS="${FLAGS} --login puredb:${PFTPD_PUREDB}"
 
 if [ -n "${PASSIVE_IP}" ]; then
   FLAGS="${FLAGS} --forcepassiveip ${PASSIVE_IP}"
 fi
 
 # Secure mode
-SECURE_FLAGS=""
+unset SECURE_FLAGS
 if [ "${SECURE_MODE}" = "true" ]; then
   SECURE_FLAGS="${SECURE_FLAGS} --maxclientsnumber 1"
   SECURE_FLAGS="${SECURE_FLAGS} --maxclientsperip 10"
@@ -57,27 +79,9 @@ if [ "${SECURE_MODE}" = "true" ]; then
   FLAGS="${FLAGS}${SECURE_FLAGS}"
 fi
 
-# Timezone
-echo "Setting timezone to ${TZ}..."
-ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
-echo "${TZ}" > /etc/timezone
-
-FLAGS="${FLAGS} --login puredb:${PFTPD_PUREDB}"
-touch "${PFTPD_PUREDB}" "${PFTPD_PASSWD}"
-pure-pw mkdb "${PFTPD_PUREDB}" -f "${PFTPD_PASSWD}"
-
-# Check TLS cert
-if [ -f "${PFTPD_PEM}" ]; then
-  chmod 600 "${PFTPD_PEM}"
-fi
-if [ -f "${PFTPD_DHPARAMS}" ]; then
-  chmod 600 "${PFTPD_DHPARAMS}"
-  ln -sf "${PFTPD_DHPARAMS}" "/${FTP_SSL}/pure-ftpd-dhparams.pem"
-fi
-
 echo "Flags"
-echo "  Secure: ${SECURE_FLAGS}"
-echo "  Additional: ${ADD_FLAGS}"
-echo "  All: ${FLAGS}"
+echo "  Secure:${SECURE_FLAGS}"
+echo "  Additional:${ADD_FLAGS}"
+echo "  All:${FLAGS}"
 
 printf '%s' "${FLAGS}" > /var/run/s6/container_environment/PUREFTPD_FLAGS
