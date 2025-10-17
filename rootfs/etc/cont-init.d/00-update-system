@@ -3,4 +3,4 @@
 # shellcheck enable=require-variable-braces
 
 apk --update --no-cache upgrade
-apk cache clean
+apk cache clean 2>/dev/null || true

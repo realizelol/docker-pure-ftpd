@@ -3,4 +3,4 @@
 # shellcheck enable=require-variable-braces
 
 # set permissions
-chown -R "${PUID}:${PGID}" /pure-ftpd
+chown -R "${FTP_UID}:${FTP_GID}" /pure-ftpd
