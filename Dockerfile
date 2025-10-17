@@ -13,24 +13,13 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
     FTP_PWD="/pure-ftpd/data/pureftpd.passwd" \
     FTP_PDB="/pure-ftpd/data/pureftpd.pdb"
 
-RUN apk --update --no-cache upgrade; \
-    apk --update --no-cache add \
-      curl \
-      ca-certificates \
-      pure-ftpd \
-      s6-overlay \
-      tzdata \
-      libretls \
-      libsodium; \
-    && apk add --no-cache --virtual .tool-deps \
-      coreutils autoconf g++ libtool make; \
-    && apk add --no-cache --virtual .build-deps \
-      libretls-dev libsodium-dev; \
-    curl -sSfL -o /tmp/pure-ftpd.tar.gz \
-      "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.5.2.tar.gz" \
-    && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
-    && cd "/tmp/pure-ftpd-1.5.2" \
-    && ./configure \
+RUN apk --update --no-cache upgrade
+RUN apk --update --no-cache add curl ca-certificates pure-ftpd s6-overlay tzdata libretls libsodium
+RUN apk add --no-cache --virtual .tool-deps coreutils autoconf g++ libtool make
+RUN apk add --no-cache --virtual .build-deps libretls-dev libsodium-dev
+RUN curl -sSfL -o /tmp/pure-ftpd.tar.gz https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.5.2.tar.gz
+RUN tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/
+RUN cd /tmp/pure-ftpd-1.5.2; ./configure \
         --prefix=/usr \
         --with-altlog \
         --with-ftpwho \
@@ -42,7 +31,8 @@ RUN apk --update --no-cache upgrade; \
         --without-inetd \
         --without-usernames \
         --without-pam \
-    && make && make install
+RUN cd /tmp/pure-ftpd-1.5.2; make
+RUN cd /tmp/pure-ftpd-1.5.2; make install
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
