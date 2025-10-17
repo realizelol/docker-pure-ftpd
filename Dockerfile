@@ -41,15 +41,11 @@ RUN apk --update --no-cache upgrade && \
     "$(: '# Build Pure-FTPd from sources')" \
     && ./configure \
         --prefix=/usr \
-        --with-brokenrealpath \
-        --with-certfile=/pure-ftpd/data/pure-ftpd.pem \
-        --with-peruserlimits \
+        --with-altlog \
+        --with-ftpwho \
         --with-puredb \
-        --with-quotas \
-        --with-ratios \
+        --with-peruserlimits \
         --with-rfc2640 \
-        --with-throttling  \
-        --with-tls \
         --without-capabilities \
         --without-humor \
         --without-inetd \
@@ -61,7 +57,10 @@ RUN apk --update --no-cache upgrade && \
     apk del .tool-deps .build-deps; \
     addgroup -g "${FTP_GID}" "${FTP_GRP}"; \
     adduser --disabled-password -M -u "${FTP_UID}" -g "${FTP_GRP}" "${FTP_USR}"; \
-    rm -rf /etc/periodic /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
+    rm -f /etc/periodic/* /tmp/* /usr/share/man/* /var/cache/apk/* /etc/socklog.rules/*
+
+    -d -d --bind 0.0.0.0,21000 --ipv4only --passiveportrange 21001:21011 --noanonymous --createhomedir --nochmod --syslogfacility ftp --login puredb:/pure-ftpd/data/pureftpd.pdb --forcepassiveip 192.168.2.21 --maxclientsnumber 1 --maxclien
+    tsperip 10 --antiwarez --customerproof --dontresolve --norename --prohibitdotfilesread --prohibitdotfileswrite
 
 COPY rootfs /
 RUN chmod +x /etc/cont-init.d/*
