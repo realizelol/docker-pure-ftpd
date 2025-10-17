@@ -14,10 +14,6 @@ PFTPD_PASSWD="/pure-ftpd/data/pureftpd.passwd"
 PFTPD_PEM="/pure-ftpd/data/pureftpd.pem"
 PFTPD_DHPARAMS="/pure-ftpd/data/pureftpd-dhparams.pem"
 
-extractFromConf() {
-  awk -F' ' "/^${1}/ {print\$2}" < "${2}"
-}
-
 # pre-config
 
 [ -d /pure-ftpd/data ] || mkdir -p /pure-ftpd/data

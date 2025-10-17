@@ -24,7 +24,7 @@ if [ "${pure_ftpd_ver_of}" != "${pure_ftpd_ver_on}" ]; then
     && curl -sSfL -o /tmp/pure-ftpd.tar.gz \
       "https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pure_ftpd_ver_on}.tar.gz" \
     && tar -xzf /tmp/pure-ftpd.tar.gz -C /tmp/ \
-    && cd /tmp/pure-ftpd-* \
+    && cd "/tmp/pure-ftpd-${pure_ftpd_ver_on}" \
     \
     "$(: '# Build Pure-FTPd from sources')" \
     && ./configure \
