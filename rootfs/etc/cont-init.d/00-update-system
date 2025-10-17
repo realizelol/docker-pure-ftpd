@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv sh
+# shellcheck shell=sh
+# shellcheck enable=require-variable-braces
+
+apk --update --no-cache upgrade
+apk cache clean
