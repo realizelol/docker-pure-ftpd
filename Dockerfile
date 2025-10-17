@@ -19,8 +19,7 @@ ENV S6_KEEP_ENV="1" \
 RUN apk --update --no-cache upgrade && \
     apk --update --no-cache add \
     s6-overlay \
-    tzdata; \
-    update-ca-certificates
+    tzdata \
     libretls \
     libsodium; \
     \
